@@ -18,6 +18,7 @@ jobs:
           packages: "ndk;29.0.14206865"
       - name: Clippy for Android
         run: |
+          rustup component add clippy
           rustup target add aarch64-linux-android
           cargo install cargo-ndk --version 4.1.2 --locked
           export ANDROID_NDK_HOME="$ANDROID_SDK_ROOT/ndk/29.0.14206865"
