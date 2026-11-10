@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- What the app may share as content URIs: copied images (cache) and its documents (files). -->
+<paths>
+    <cache-path name="cache" path="clipboard/" />
+    <files-path name="documents" path="documents/" />
+    <files-path name="folders" path="folders/" />
+</paths>

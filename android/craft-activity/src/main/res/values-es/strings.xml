@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="craft_save_back_failed">No se pudo guardar %1$s en su ubicación original. Usa Archivo ▸ Guardar como para conservar los cambios.</string>
+    <string name="craft_open_failed">No se pudieron abrir algunos documentos.</string>
+    <string name="craft_print_failed">No se pudo empezar a imprimir.</string>
+    <string name="craft_no_app_for_link">Ninguna app puede abrir este enlace.</string>
+    <string name="craft_crash_title">La última vez algo falló</string>
+    <string name="craft_report_title">Diagnóstico</string>
+    <string name="craft_crash_copy">Copiar informe</string>
+    <string name="craft_crash_close">Cerrar</string>
+    <string name="craft_diagnostics_short">Diagnóstico</string>
+    <string name="craft_diagnostics_label">Diagnóstico de %1$s</string>
+</resources>

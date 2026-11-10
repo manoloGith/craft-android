@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Merged into the app's manifest. The app declares its own MainActivity (a CraftActivity) with
+     android.app.lib_name, configChanges, the DeX layout and its intent filters. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <!-- Restarts the app in a fresh process when Android reuses one it has already run in. -->
+        <activity
+            android:name="io.github.craftandroid.RestartActivity"
+            android:exported="false"
+            android:noHistory="true"
+            android:excludeFromRecents="true"
+            android:process=":restart"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
+        <!-- Copied images and files go to the clipboard as content URIs of the app's own files. -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.files"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/craft_file_paths" />
+        </provider>
+    </application>
+</manifest>

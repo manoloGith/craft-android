@@ -1,0 +1,19 @@
+[package]
+name = "rfd-android-shim"
+version = "0.17.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+publish = false
+description = "rfd for PdfCraft: the real rfd everywhere but Android, where a backend the app installs answers (DexPdfCraft)"
+
+[lib]
+name = "rfd"
+
+[features]
+file-handle-inner = ["rfd_real/file-handle-inner"]
+
+[dependencies]
+log = "0.4"
+
+[target.'cfg(not(target_os = "android"))'.dependencies]
+rfd_real = { package = "rfd", version = "0.17" }

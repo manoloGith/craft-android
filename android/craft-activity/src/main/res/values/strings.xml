@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="craft_save_back_failed">Could not save %1$s to its original location. Use File ▸ Save As to keep the changes.</string>
+    <string name="craft_open_failed">Some documents could not be opened.</string>
+    <string name="craft_print_failed">Printing could not start.</string>
+    <string name="craft_no_app_for_link">No app can open this link.</string>
+    <string name="craft_crash_title">Last time something went wrong</string>
+    <string name="craft_report_title">Diagnostics</string>
+    <string name="craft_crash_copy">Copy report</string>
+    <string name="craft_crash_close">Close</string>
+    <string name="craft_diagnostics_short">Diagnostics</string>
+    <string name="craft_diagnostics_label">%1$s diagnostics</string>
+</resources>

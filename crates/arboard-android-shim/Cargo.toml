@@ -1,0 +1,17 @@
+[package]
+name = "arboard-android-shim"
+version = "3.6.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+publish = false
+description = "arboard for PdfCraft: the real arboard on desktops, a backend the app installs on Android (DexPdfCraft)"
+
+[lib]
+name = "arboard"
+
+[dependencies]
+log = "0.4"
+
+# Create ▸ Clipboard (images; already in the tree through egui-winit).
+[target.'cfg(not(any(target_arch = "wasm32", target_os = "android")))'.dependencies]
+arboard_real = { package = "arboard", version = "3.6", default-features = false, features = ["image-data"] }

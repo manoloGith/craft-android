@@ -1,0 +1,32 @@
+# craft-android: the Android layer for storytold's Crafting Apps (see README.md).
+#
+# The apps pin egui and winit to storytold's forks; this workspace does the same so the library
+# builds and tests on its own. An app's workspace keeps its own patches (copied from its
+# upstream) and points winit at this repository's `winit/` (storytold's winit plus W-DEX1..3).
+[workspace]
+resolver = "3"
+members = ["crates/craft-android", "crates/rfd-android-shim", "crates/arboard-android-shim"]
+exclude = ["winit"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.95"
+repository = "https://github.com/manoloGith/craft-android"
+
+[workspace.lints.rust]
+# Only the JNI entry points (`no_mangle`) and `std::env::set_var` at start-up need unsafe.
+unsafe_code = "deny"
+
+[patch.crates-io]
+ecolor = { git = "https://github.com/storytold/egui.git", rev = "6d518fc799681571963842f95b55a6b68431b15a" }
+emath = { git = "https://github.com/storytold/egui.git", rev = "6d518fc799681571963842f95b55a6b68431b15a" }
+epaint = { git = "https://github.com/storytold/egui.git", rev = "6d518fc799681571963842f95b55a6b68431b15a" }
+epaint_default_fonts = { git = "https://github.com/storytold/egui.git", rev = "6d518fc799681571963842f95b55a6b68431b15a" }
+egui = { git = "https://github.com/storytold/egui.git", rev = "6d518fc799681571963842f95b55a6b68431b15a" }
+egui-winit = { git = "https://github.com/storytold/egui.git", rev = "6d518fc799681571963842f95b55a6b68431b15a" }
+egui-wgpu = { git = "https://github.com/storytold/egui.git", rev = "6d518fc799681571963842f95b55a6b68431b15a" }
+egui_glow = { git = "https://github.com/storytold/egui.git", rev = "6d518fc799681571963842f95b55a6b68431b15a" }
+eframe = { git = "https://github.com/storytold/egui.git", rev = "6d518fc799681571963842f95b55a6b68431b15a" }
+winit = { path = "winit" }

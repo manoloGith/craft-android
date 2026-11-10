@@ -1,0 +1,30 @@
+[package]
+name = "craft-android"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+description = "Android layer for storytold's Crafting Apps (egui/eframe): DeX mouse and keyboard, on-screen keyboard, insets, lifecycle, Storage Access Framework, clipboard, printing, diagnostics"
+
+[lints]
+workspace = true
+
+[dependencies]
+egui = "0.37"
+# `glow`: eframe::App::on_exit takes a GL context when it is on, as in the apps.
+eframe = { version = "0.37", default-features = false, features = ["glow"] }
+log = "0.4"
+serde_json = "1"
+
+[target.'cfg(target_os = "android")'.dependencies]
+winit = { version = "0.30", default-features = false, features = ["android-game-activity"] }
+eframe = { version = "0.37", default-features = false, features = ["android-game-activity"] }
+# The release android-activity uses, so its JavaVM singleton is the one this crate sees.
+jni = "0.22.4"
+android_logger = { version = "0.15", default-features = false }
+
+# The tests build on a Linux host: winit needs a windowing backend there (an app's desktop
+# binary turns on its own).
+[target.'cfg(all(unix, not(any(target_os = "android", target_os = "macos"))))'.dev-dependencies]
+eframe = { version = "0.37", default-features = false, features = ["x11"] }
