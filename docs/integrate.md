@@ -69,6 +69,10 @@ fn android_main(app: AndroidApp) {
 
 - **`Shell`** debe envolver a la app siempre (también en escritorio, donde no hace nada): sin él no
   llegan ratón, teclado, teclado en pantalla ni insets.
+- **Copiar, cortar y pegar:** `Shell` convierte Ctrl+C, X y V de la actividad en `Event::Copy`,
+  `Cut` y `Paste` con el texto del portapapeles del sistema, y lleva a ese portapapeles el texto que
+  copia egui (`OutputCommand::CopyText`), como hace egui-winit en escritorio. La app no tiene que
+  hacer nada; si su interfaz copia HTML o imágenes, que lo haga con `android::clipboard`.
 - **Back** se convierte en la petición de cierre de egui: si la app la cancela para preguntar por
   cambios sin guardar, el diálogo aparece como en el escritorio.
 - **«Abrir con»**: `platform::events::opened()` devuelve las rutas locales nuevas; conviértelas en

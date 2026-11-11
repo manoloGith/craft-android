@@ -6,7 +6,9 @@
 //!
 //! - [`pointer`], [`keyboard`], [`ime`], [`insets`]: the mouse, the hardware keyboard, the
 //!   on-screen keyboard and the system's insets, handed over by `CraftActivity` (Kotlin) and turned
-//!   into egui input. Platform independent, tested on any machine.
+//!   into egui input; [`clipboard_keys`] makes Ctrl+C, X and V copy, cut and paste with the
+//!   system clipboard, as egui-winit does on the desktop. Platform independent, tested on any
+//!   machine.
 //! - [`shell::Shell`]: wraps the app's `eframe::App`: injects that input, closes on Back the way a
 //!   window's close button does (the app may ask about unsaved changes), autosaves when the window
 //!   loses focus, and on Android hands the cursor, title and links to the activity.
@@ -16,6 +18,7 @@
 //! See `docs/integrate.md` in the repository.
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic)]
 
+pub mod clipboard_keys;
 pub mod ime;
 pub mod insets;
 pub mod keyboard;

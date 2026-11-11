@@ -10,6 +10,8 @@
 //! - **Autosave when the window loses focus** ([`Shell::on_focus_lost`]): Android can end the app
 //!   without asking (the close button of a DeX window, the system reclaiming memory), so the app
 //!   should write its crash recovery as soon as the user turns away.
+//! - **Copy, cut and paste** ([`crate::clipboard_keys`]): Ctrl+C, X and V from the activity
+//!   become egui's Copy, Cut and Paste with the system clipboard, and text egui copies goes to it.
 //! - **Cursor, title and links** go to the activity on Android, where winit ignores them.
 
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -128,6 +130,14 @@ impl<A: eframe::App> eframe::App for Shell<A> {
             for url in urls {
                 crate::android::desktop::open_url(&url);
             }
+            // Text egui copies (text fields, an app's plain-text copy) goes to the system
+            // clipboard.
+            for text in crate::clipboard_keys::take_copied_text(ui.ctx()) {
+                let clip = crate::android::clipboard::Clip::Text(text);
+                if let Err(e) = crate::android::clipboard::set(clip) {
+                    log::warn!("craft-android: clipboard: {e}");
+                }
+            }
         }
     }
 
@@ -154,7 +164,11 @@ impl<A: eframe::App> eframe::App for Shell<A> {
     fn raw_input_hook(&mut self, ctx: &egui::Context, raw_input: &mut egui::RawInput) {
         // The hardware keyboard, the on-screen keyboard, the insets and the mouse on Android
         // (CraftActivity hands them over; nothing is queued elsewhere).
-        raw_input.events.extend(crate::keyboard::drain());
+        // Ctrl+C, X and V become Copy, Cut and Paste with the system clipboard, as egui-winit
+        // makes them on the desktop.
+        let mut keys = crate::keyboard::drain();
+        crate::clipboard_keys::keys_to_clipboard_events(&mut keys, system_clipboard_text);
+        raw_input.events.extend(keys);
         raw_input.events.extend(crate::ime::drain());
         if let Some(safe_area) = crate::insets::safe_area(ctx.pixels_per_point()) {
             raw_input.safe_area_insets = Some(safe_area);
@@ -162,4 +176,18 @@ impl<A: eframe::App> eframe::App for Shell<A> {
         raw_input.events.extend(crate::pointer::drain(ctx.pixels_per_point()));
         self.app.raw_input_hook(ctx, raw_input);
     }
+}
+
+/// The system clipboard's text, for a paste (`None` when it holds none, and off Android).
+fn system_clipboard_text() -> Option<String> {
+    #[cfg(target_os = "android")]
+    {
+        use crate::android::clipboard::{Clip, get};
+        match get()? {
+            Clip::Text(text) | Clip::Html { text, .. } => Some(text),
+            _ => None,
+        }
+    }
+    #[cfg(not(target_os = "android"))]
+    None
 }
