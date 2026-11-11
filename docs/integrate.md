@@ -121,6 +121,10 @@ La biblioteca ya declara `RestartActivity` (proceso `:restart`) y el `FileProvid
 - Meta-data de Samsung: `com.samsung.android.keepalive.density` y
   `com.samsung.android.multidisplay.keep_process_alive` = `true`.
 - Intent filters `VIEW`/`EDIT`/`SEND`/`SEND_MULTIPLE` con los tipos MIME de la app.
+- Acciones propias de otras apps (por ejemplo el «Abrir» de un gestor de archivos,
+  `io.github.dexfiles.action.OPEN`, con su `meta-data` de extensiones): `CraftActivity` abre los
+  documentos de cualquier acción que no sea `MAIN`, `VIEW`, `EDIT` ni `SEND*` desde su URI de
+  datos, su `ClipData` o su `EXTRA_STREAM`; basta con declarar el `intent-filter`.
 - Opcional (debug): un `activity-alias` cuyo nombre acabe en `.Diagnostics` abre el informe.
 
 ## 5. Por qué cada pieza

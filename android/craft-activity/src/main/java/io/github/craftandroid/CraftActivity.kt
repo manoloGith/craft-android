@@ -485,13 +485,18 @@ open class CraftActivity : GameActivity() {
         Process.killProcess(Process.myPid())
     }
 
-    /** "Open with" and "Share" from other apps: open the PDFs in a new tab. */
+    /**
+     * "Open with" and "Share" from other apps: open the documents in new tabs. Any other action
+     * that carries documents (an app's own, such as a file manager's `…action.OPEN` declared in
+     * the manifest) opens them too: its data URI and the URIs of its clip data.
+     */
     private fun handleIntent(intent: Intent?) {
         val uris = when (intent?.action) {
+            null, Intent.ACTION_MAIN, ACTION_DIAGNOSTICS -> emptyList()
             Intent.ACTION_VIEW, Intent.ACTION_EDIT -> listOfNotNull(intent.data)
             Intent.ACTION_SEND -> listOfNotNull(intent.streamExtra())
             Intent.ACTION_SEND_MULTIPLE -> intent.streamExtras()
-            else -> emptyList()
+            else -> intent.documentUris()
         }
         if (uris.isEmpty()) return
         val writable = intent!!.flags and Intent.FLAG_GRANT_WRITE_URI_PERMISSION != 0
@@ -657,3 +662,13 @@ private fun Intent.streamExtra(): Uri? = getParcelableExtra(Intent.EXTRA_STREAM)
 
 @Suppress("DEPRECATION")
 private fun Intent.streamExtras(): List<Uri> = getParcelableArrayListExtra<Uri>(Intent.EXTRA_STREAM).orEmpty()
+
+/** The documents an intent of another action carries: its data, its clip data, its streams. */
+private fun Intent.documentUris(): List<Uri> {
+    val uris = mutableListOf<Uri>()
+    data?.let(uris::add)
+    clipData?.let { clip -> for (i in 0 until clip.itemCount) clip.getItemAt(i).uri?.let(uris::add) }
+    streamExtra()?.let(uris::add)
+    uris += streamExtras()
+    return uris.distinct()
+}
