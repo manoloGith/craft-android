@@ -78,6 +78,13 @@ fn android_main(app: AndroidApp) {
 - **«Abrir con»**: `platform::events::opened()` devuelve las rutas locales nuevas; conviértelas en
   el evento de apertura de la app en cada frame.
 - **Imprimir**: `platform::print::print_pdf(bytes, título, carpeta)` abre el diálogo del sistema.
+- **Pestañas de documentos** (`craft_android::tabs`): para apps que en Android enseñan varios
+  documentos en una sola ventana. `TabStrip::new(&tabs).show_panel(ui)` dibuja una tira de
+  pestañas con el nombre, un punto si hay cambios sin guardar, una × y un botón +. Solo informa
+  de lo pulsado (`TabAction::Activate`, `Close`, `New`), y la app lo hace con sus propios comandos:
+  `Close` debe pasar por el Cerrar de la app, que pregunta si guardar. Se llama justo después de
+  la cinta o la barra de herramientas, así que el fork de la app necesita un enganche ahí. Ejemplo:
+  DexWordCraft (`Services::below_ribbon` en su fork).
 
 ## 3. Gradle
 

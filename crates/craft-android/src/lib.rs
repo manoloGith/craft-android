@@ -9,6 +9,8 @@
 //!   into egui input; [`clipboard_keys`] makes Ctrl+C, X and V copy, cut and paste with the
 //!   system clipboard, as egui-winit does on the desktop. Platform independent, tested on any
 //!   machine.
+//! - [`tabs`]: a strip of document tabs for apps that show several documents in one window
+//!   (the name, an unsaved dot, close and new buttons); the app does what was clicked.
 //! - [`shell::Shell`]: wraps the app's `eframe::App`: injects that input, closes on Back the way a
 //!   window's close button does (the app may ask about unsaved changes), autosaves when the window
 //!   loses focus, and on Android hands the cursor, title and links to the activity.
@@ -25,6 +27,7 @@ pub mod keyboard;
 pub mod pointer;
 pub mod protocol;
 pub mod shell;
+pub mod tabs;
 
 #[cfg(target_os = "android")]
 pub mod android;
