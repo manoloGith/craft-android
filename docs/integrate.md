@@ -78,6 +78,9 @@ fn android_main(app: AndroidApp) {
 - **«Abrir con»**: `platform::events::opened()` devuelve las rutas locales nuevas; conviértelas en
   el evento de apertura de la app en cada frame.
 - **Imprimir**: `platform::print::print_pdf(bytes, título, carpeta)` abre el diálogo del sistema.
+- **Diagnóstico** (Ctrl+Mayús+D, «Diagnostics» en el menú del icono, informe al arrancar tras un
+  fallo): solo en compilaciones depurables (APK de debug). Un release no muestra nada de eso, aunque
+  sigue guardando el registro. Para cambiarlo, sobrescribe `diagnosticsEnabled()` en tu `MainActivity`.
 - **Pestañas de documentos** (`craft_android::tabs`): para apps que en Android enseñan varios
   documentos en una sola ventana. `TabStrip::new(&tabs).show_panel(ui)` dibuja una tira de
   pestañas con el nombre, un punto si hay cambios sin guardar, una × y un botón +. Solo informa

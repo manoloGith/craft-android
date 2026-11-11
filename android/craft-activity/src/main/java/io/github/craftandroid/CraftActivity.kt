@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Intent
+import android.content.pm.ApplicationInfo
 import android.content.pm.ShortcutInfo
 import android.content.pm.ShortcutManager
 import android.content.res.Configuration
@@ -47,7 +48,8 @@ import java.util.concurrent.Executors
  *   can be created once per process);
  * - the Storage Access Framework (DocumentStore), the clipboard, printing, "Open with", "Share",
  *   drag and drop, the cursor, the task's title, links;
- * - diagnostics for testers without adb (Diag, a report at the next start, Ctrl+Shift+D).
+ * - diagnostics for testers without adb (Diag, a report at the next start, Ctrl+Shift+D), shown
+ *   in debuggable builds only unless [diagnosticsEnabled] says otherwise.
  *
  * Rust calls [bridge] over JNI; answers that come later go back through the native methods.
  * Everything crosses as JSON text and byte arrays (`protocol.rs`).
@@ -82,7 +84,7 @@ open class CraftActivity : GameActivity() {
         }
         takeMouseInput()
         acceptDrops()
-        offerDiagnosticsShortcut()
+        if (diagnosticsEnabled()) offerDiagnosticsShortcut() else withdrawDiagnosticsShortcut()
         current = this
         documents = DocumentStore(applicationContext).also { it.start() }
         clipboard = ClipboardBridge(applicationContext)
@@ -93,7 +95,7 @@ open class CraftActivity : GameActivity() {
             override fun handleOnBackPressed() = nativeEvent("close", "{}")
         })
         if (savedInstanceState == null) handleIntent(intent)
-        showReport(onlyIfSomethingWentWrong = !isDiagnosticsLaunch(intent))
+        if (diagnosticsEnabled()) showReport(onlyIfSomethingWentWrong = !isDiagnosticsLaunch(intent))
     }
 
     // --- Mouse ---------------------------------------------------------------------------------
@@ -310,6 +312,21 @@ open class CraftActivity : GameActivity() {
     private fun isDiagnosticsLaunch(i: Intent?) =
         i?.action == ACTION_DIAGNOSTICS || i?.component?.className?.endsWith(".Diagnostics") == true
 
+    /**
+     * Whether testers get the diagnostics: the "Diagnostics" item in the icon's menu, Ctrl+Shift+D
+     * and the report at start after a crash. By default only in debuggable builds (debug APKs):
+     * a release shows none of it. The log (`Diag`) and crash records are kept either way. Override
+     * to choose otherwise.
+     */
+    protected open fun diagnosticsEnabled(): Boolean =
+        (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
+
+    /** A release installed over a build that offered the shortcut: take it away. */
+    private fun withdrawDiagnosticsShortcut() {
+        runCatching { getSystemService(ShortcutManager::class.java)?.removeAllDynamicShortcuts() }
+            .onFailure { Diag.log("diagnostics shortcut: $it") }
+    }
+
     /** "Diagnostics" in the menu of the app's icon (long press, or right click in DeX). */
     private fun offerDiagnosticsShortcut() {
         runCatching {
@@ -323,9 +340,9 @@ open class CraftActivity : GameActivity() {
         }.onFailure { Diag.log("diagnostics shortcut: $it") }
     }
 
-    /** Ctrl+Shift+D shows the diagnostics report; physical keyboards go to the library. */
+    /** Ctrl+Shift+D shows the diagnostics report (when enabled); physical keyboards go to the library. */
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
-        if (event.action == KeyEvent.ACTION_DOWN && event.keyCode == KeyEvent.KEYCODE_D &&
+        if (diagnosticsEnabled() && event.action == KeyEvent.ACTION_DOWN && event.keyCode == KeyEvent.KEYCODE_D &&
             event.isCtrlPressed && event.isShiftPressed
         ) {
             showReport(onlyIfSomethingWentWrong = false)
@@ -442,7 +459,11 @@ open class CraftActivity : GameActivity() {
         super.onNewIntent(intent)
         Diag.log("onNewIntent ${intent.action}")
         setIntent(intent)
-        if (isDiagnosticsLaunch(intent)) showReport(onlyIfSomethingWentWrong = false) else handleIntent(intent)
+        if (isDiagnosticsLaunch(intent)) {
+            if (diagnosticsEnabled()) showReport(onlyIfSomethingWentWrong = false)
+        } else {
+            handleIntent(intent)
+        }
     }
 
     override fun onDestroy() {
